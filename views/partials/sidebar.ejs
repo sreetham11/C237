@@ -1,0 +1,58 @@
+<!-- views/partials/sidebar.ejs -->
+<style>
+    /* Sidebar styles */
+    .sidebar {
+        position: fixed;
+        top: 56px; /* height of navbar */
+        left: 0;
+        width: 200px;
+        height: 100%;
+        padding-top: 20px;
+        transition: transform 0.3s ease;
+        background-color: #343a40;
+        z-index: 1000;
+    }
+    .sidebar a {
+        display: block;
+        padding: 10px 15px;
+        text-decoration: none;
+        color: #fff;
+    }
+    .sidebar a:hover {
+        background-color: #495057;
+    }
+    .sidebar.active {
+        transform: translateX(-220px); /* hide sidebar */
+    }
+    .content {
+        margin-left: 200px;
+        transition: margin-left 0.3s ease;
+    }
+    .content.shifted {
+        margin-left: 0;
+    }
+</style>
+
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+    <a href="/">Home</a>
+    <a href="/products">Listings</a>
+    <a href="/sales">Sales</a>
+    <a href="/settings">Settings</a>
+</div>
+
+<script>
+    // Sidebar toggle logic
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebar = document.getElementById('sidebar');
+    const content = document.getElementById('content');
+
+    if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+            if (content) {
+                content.classList.toggle('shifted');
+            }
+        });
+    }
+</script>
