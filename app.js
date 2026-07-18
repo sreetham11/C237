@@ -314,7 +314,6 @@ app.post(
       name,
       description,
       category,
-      category_other,
       condition_type,
       quantity,
       price,
@@ -322,20 +321,7 @@ app.post(
       meetup_location
     } = req.body;
 
-    let finalCategory = category;
-
-    if (
-      category === 'Others' &&
-      category_other
-    ) {
-      finalCategory = category_other;
-    }
-
-    let image = null;
-
-    if (req.file) {
-      image = req.file.filename;
-    }
+    const finalCategory = category;
 
     const sql = `
       INSERT INTO products (
@@ -363,7 +349,7 @@ app.post(
       price,
       delivery_method,
       meetup_location,
-      image
+      req.file ? req.file.filename : null
     ];
 
     db.query(sql, values, (err) => {
