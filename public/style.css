@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-body {
-  background-color: #f5f5f5;
-=======
 :root {
   --accent: #E8734A;
   --accent-light: #FBE0D3;
@@ -32,7 +28,6 @@ a {
 
 a:hover {
   color: var(--accent-dark);
->>>>>>> 33c792b37169887a1d2392410752688fb4087ac7
 }
 
 .content {
@@ -47,31 +42,12 @@ a:hover {
   width: 200px;
   height: 100vh;
   padding-top: 20px;
-<<<<<<< HEAD
-  background-color: #343a40;
-=======
   background-color: var(--sidebar-bg);
->>>>>>> 33c792b37169887a1d2392410752688fb4087ac7
 }
 
 .sidebar a {
   display: block;
   padding: 12px 20px;
-<<<<<<< HEAD
-  color: white;
-  text-decoration: none;
-}
-
-.sidebar a:hover {
-  background-color: #495057;
-}
-
-.page-section {
-  background-color: white;
-  padding: 25px;
-  border-radius: 10px;
-  margin-bottom: 25px;
-=======
   color: rgba(255, 255, 255, 0.85);
   text-decoration: none;
   border-left: 3px solid transparent;
@@ -117,29 +93,22 @@ a:hover {
   border: none;
   border-top: 2px solid var(--accent-light);
   margin: 24px 0;
->>>>>>> 33c792b37169887a1d2392410752688fb4087ac7
 }
 
 .product-image {
   width: 80px;
   height: 80px;
   object-fit: cover;
-<<<<<<< HEAD
-=======
   border-radius: 10px;
   border: 1px solid var(--border-soft);
->>>>>>> 33c792b37169887a1d2392410752688fb4087ac7
 }
 
 .product-image-large {
   width: 250px;
   max-height: 250px;
   object-fit: cover;
-<<<<<<< HEAD
-=======
   border-radius: 10px;
   border: 1px solid var(--border-soft);
->>>>>>> 33c792b37169887a1d2392410752688fb4087ac7
 }
 
 .profile-pic {
@@ -147,19 +116,13 @@ a:hover {
   height: 120px;
   object-fit: cover;
   border-radius: 50%;
-<<<<<<< HEAD
-  border: 3px solid #343a40;
-=======
   border: 3px solid var(--sidebar-bg);
->>>>>>> 33c792b37169887a1d2392410752688fb4087ac7
 }
 
 .navbar-search {
   width: 50%;
 }
 
-<<<<<<< HEAD
-=======
 /* Buttons */
 .btn-primary {
   background-color: var(--accent);
@@ -223,7 +186,6 @@ a:hover {
   margin-bottom: 14px;
 }
 
->>>>>>> 33c792b37169887a1d2392410752688fb4087ac7
 @media screen and (max-width: 768px) {
   .content {
     margin-left: 0;
@@ -242,8 +204,4 @@ a:hover {
     width: 100%;
     margin-top: 10px;
   }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 33c792b37169887a1d2392410752688fb4087ac7
