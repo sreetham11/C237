@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0">
+
   <title>Product Details - ResellVault</title>
 
   <link
@@ -13,49 +17,148 @@
     href="/style.css"
     rel="stylesheet">
 </head>
+
 <body>
+
   <%- include('partials/navbar') %>
   <%- include('partials/sidebar') %>
 
   <div class="content">
+
+    <% if (messages && messages.length > 0) { %>
+      <div class="alert alert-success">
+        <%= messages[0] %>
+      </div>
+    <% } %>
+
+    <% if (errors && errors.length > 0) { %>
+      <div class="alert alert-danger">
+        <%= errors[0] %>
+      </div>
+    <% } %>
+
     <div class="page-section">
-      <h1><%= product.name %></h1>
+
+      <h1>
+        <%= product.name %>
+      </h1>
 
       <% if (product.image) { %>
+
         <img
           src="/images/<%= product.image %>"
           alt="<%= product.name %>"
-          class="product-image-large mb-3">
+          width="250"
+          class="mb-3">
+
       <% } else { %>
+
         <p>No image</p>
+
       <% } %>
 
-      <p><strong>Description:</strong> <%= product.description %></p>
-      <p><strong>Category:</strong> <%= product.category %></p>
-      <p><strong>Condition:</strong> <%= product.condition_type %></p>
-      <p><strong>Quantity:</strong> <%= product.quantity %></p>
-      <p><strong>Price:</strong> $<%= product.price %></p>
-      <p><strong>Delivery Method:</strong> <%= product.delivery_method %></p>
-      <p><strong>Meet-up Location:</strong> <%= product.meetup_location %></p>
+      <p>
+        <strong>Enlisted By:</strong>
+        <%= product.seller_name %>
+      </p>
 
-      <a href="/products" class="btn btn-outline-dark">
-        Back to Listings
-      </a>
+      <p>
+        <strong>Description:</strong>
+        <%= product.description %>
+      </p>
+
+      <p>
+        <strong>Category:</strong>
+        <%= product.category %>
+      </p>
+
+      <p>
+        <strong>Condition:</strong>
+        <%= product.condition_type %>
+      </p>
+
+      <p>
+        <strong>Quantity:</strong>
+        <%= product.quantity %>
+      </p>
+
+      <p>
+        <strong>Price:</strong>
+        $<%= product.price %>
+      </p>
+
+      <p>
+        <strong>Delivery Method:</strong>
+        <%= product.delivery_method %>
+      </p>
+
+      <p>
+        <strong>Meet-up Location:</strong>
+        <%= product.meetup_location %>
+      </p>
 
       <% if (
-        user.role === 'admin' ||
-        (
-          user.role === 'seller' &&
-          product.seller_id == user.user_id
-        )
+        user.role === 'buyer' ||
+        user.role === 'user'
       ) { %>
+
+        <form
+          action="/cart/add/<%= product.product_id %>"
+          method="POST"
+          class="d-inline">
+
+          <button
+            type="submit"
+            class="btn btn-success">
+
+            Add to Cart
+
+          </button>
+
+        </form>
+
+      <% } %>
+
+      <% if (
+        user.role === 'seller' &&
+        product.seller_id == user.user_id
+      ) { %>
+
         <a
           href="/editProduct/<%= product.product_id %>"
           class="btn btn-warning">
+
           Edit
+
         </a>
+
       <% } %>
+
+      <% if (user.role === 'admin') { %>
+
+        <a
+          href="/deleteProduct/<%= product.product_id %>"
+          class="btn btn-danger"
+          onclick="return confirm('Are you sure you want to delete this product?')">
+
+          Delete
+
+        </a>
+
+      <% } %>
+
+      <a
+        href="/products"
+        class="btn btn-secondary">
+
+        Back to Listings
+
+      </a>
+
     </div>
+
   </div>
+
 </body>
+
 </html>
