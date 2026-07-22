@@ -100,7 +100,7 @@
             <% } %>
 
             <% if (user && user.role === 'admin') { %>
-              <a>
+              <a
                 href="/deleteProduct/<%= product.product_id %>"
                 class="btn btn-danger"
                 onclick="return confirm('Are you sure you want to delete this product?')">
@@ -124,7 +124,7 @@
                 </button>
               </form>
             <% } %>
-            <a>
+            <a
               href="/products"
               class="btn btn-secondary">
               Back to Listings
