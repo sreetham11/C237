@@ -73,6 +73,10 @@
               name="category"
               class="form-select">
 
+              <option value="Trading Cards" <%= product.category === 'Trading Cards' ? 'selected' : '' %>>
+                Trading Cards
+              </option>
+
               <option value="Clothing" <%= product.category === 'Clothing' ? 'selected' : '' %>>
                 Clothing
               </option>
