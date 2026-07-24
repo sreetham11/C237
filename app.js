@@ -200,33 +200,42 @@ const summarizeProductStats = (products) => {
   };
 };
 
-// Item count and total value of a user's saved cart (cart_items table).
-// Shared by GET /cart and the Buyer/Seller/Admin Dashboard cart stats.
-const getCartSummary = (userId, callback) => {
+// Get the logged-in user's cart rows from the database, joined with
+// product + seller details. Reused by GET /cart and the Buyer/Seller/Admin
+// Dashboard cart stats so both stay consistent with each other.
+const getCartItems = (userId, callback) => {
   const sql = `
-    SELECT products.price
+    SELECT
+      cart_items.id AS cart_id,
+      cart_items.added_at,
+      products.product_id,
+      products.name,
+      products.image,
+      products.price,
+      users.username AS seller_name
     FROM cart_items
-    JOIN products
-      ON cart_items.product_id = products.product_id
+    JOIN products ON cart_items.product_id = products.product_id
+    LEFT JOIN users ON products.seller_id = users.user_id
     WHERE cart_items.user_id = ?
+    ORDER BY cart_items.added_at DESC
   `;
 
-  db.query(sql, [userId], (error, rows) => {
-    if (error) {
-      return callback(error);
-    }
+  db.query(sql, [userId], callback);
+};
 
-    let total = 0;
+// Item count and total value of the cart.
+// Shared by GET /cart and the Buyer/Seller/Admin Dashboard cart stats.
+const summarizeCart = (cart) => {
+  let total = 0;
 
-    for (let i = 0; i < rows.length; i++) {
-      total = total + Number(rows[i].price);
-    }
+  for (let i = 0; i < cart.length; i++) {
+    total = total + Number(cart[i].price);
+  }
 
-    callback(null, {
-      count: rows.length,
-      total: total
-    });
-  });
+  return {
+    count: cart.length,
+    total: total
+  };
 };
 
 // Home page
@@ -407,17 +416,17 @@ app.get(
   (req, res) => {
     const user = req.session.user;
 
-    getCartSummary(user.user_id, (cartErr, cartSummaryResult) => {
-      if (cartErr) {
+    getCartItems(user.user_id, (cartError, cartRows) => {
+      if (cartError) {
         console.error(
           'Cart summary query error:',
-          cartErr
+          cartError
         );
       }
 
-      const cartSummary = cartErr ?
+      const cartSummary = cartError ?
         { count: 0, total: 0 } :
-        cartSummaryResult;
+        summarizeCart(cartRows);
 
       if (user.role === 'admin') {
         const sql = `
@@ -1238,7 +1247,7 @@ app.post(
 
 // CART
 
-// Add a product to the logged-in user's saved cart (cart_items table)
+// Add a product to the logged-in user's cart (persisted in cart_items)
 app.post(
   '/cart/add/:id',
   checkAuthenticated,
@@ -1319,29 +1328,13 @@ app.post(
   }
 );
 
-// Display the logged-in user's saved cart
+// Display the logged-in user's cart (read from cart_items)
 app.get(
   '/cart',
   checkAuthenticated,
   checkCartAccess,
   (req, res) => {
-    const user = req.session.user;
-
-    const sql = `
-      SELECT
-        cart_items.id AS cart_item_id,
-        products.*,
-        users.username AS seller_name
-      FROM cart_items
-      JOIN products
-        ON cart_items.product_id = products.product_id
-      LEFT JOIN users
-        ON products.seller_id = users.user_id
-      WHERE cart_items.user_id = ?
-      ORDER BY cart_items.added_at DESC
-    `;
-
-    db.query(sql, [user.user_id], (error, cart) => {
+    getCartItems(req.session.user.user_id, (error, cart) => {
       if (error) {
         console.error(
           'Cart query error:',
@@ -1356,22 +1349,18 @@ app.get(
         return res.render('cart', {
           cart: [],
           total: 0,
-          user: user,
+          user: req.session.user,
           messages: req.flash('success'),
           errors: req.flash('error')
         });
       }
 
-      let total = 0;
-
-      for (let i = 0; i < cart.length; i++) {
-        total = total + Number(cart[i].price);
-      }
+      const cartSummary = summarizeCart(cart);
 
       res.render('cart', {
         cart: cart,
-        total: total,
-        user: user,
+        total: cartSummary.total,
+        user: req.session.user,
         messages: req.flash('success'),
         errors: req.flash('error')
       });
@@ -1379,16 +1368,15 @@ app.get(
   }
 );
 
-// Remove one item from the logged-in user's saved cart.
+// Remove one item from the logged-in user's cart.
 // The WHERE clause scopes the delete to this user, so nobody
-// can remove another user's cart item by guessing a cart_item id.
-app.post(
+// can remove another user's cart item by guessing a cart_id.
+app.get(
   '/cart/remove/:id',
   checkAuthenticated,
   checkCartAccess,
   (req, res) => {
-    const cartItemId = req.params.id;
-    const user = req.session.user;
+    const cartId = req.params.id;
 
     const sql = `
       DELETE FROM cart_items
@@ -1398,8 +1386,8 @@ app.post(
 
     db.query(
       sql,
-      [cartItemId, user.user_id],
-      (error) => {
+      [cartId, req.session.user.user_id],
+      (error, result) => {
         if (error) {
           console.error(
             'Cart remove error:',
@@ -1409,6 +1397,15 @@ app.post(
           req.flash(
             'error',
             'Could not remove item from cart.'
+          );
+
+          return res.redirect('/cart');
+        }
+
+        if (result.affectedRows === 0) {
+          req.flash(
+            'error',
+            'Cart item not found.'
           );
 
           return res.redirect('/cart');
