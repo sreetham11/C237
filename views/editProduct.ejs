@@ -62,6 +62,21 @@
 
           </div>
 
+          <%
+            const fixedCategories = [
+              'Trading Cards',
+              'Clothing',
+              'Shoes',
+              'Accessories',
+              'Electronics',
+              'Collectibles',
+              'Others'
+            ];
+
+            const isCustomCategory =
+              !fixedCategories.includes(product.category);
+          %>
+
           <div class="mb-3">
 
             <label for="category" class="form-label">
@@ -97,7 +112,7 @@
                 Collectibles
               </option>
 
-              <option value="Others" <%= product.category === 'Others' ? 'selected' : '' %>>
+              <option value="Others" <%= (product.category === 'Others' || isCustomCategory) ? 'selected' : '' %>>
                 Others
               </option>
 
@@ -116,6 +131,7 @@
               id="category_other"
               name="category_other"
               class="form-control"
+              value="<%= isCustomCategory ? product.category : '' %>"
               placeholder="e.g. Trading Cards">
 
           </div>
